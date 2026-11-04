@@ -1,0 +1,44 @@
+// ============================================================================
+// Project 1: AI-Powered Stock Market Intelligence Dashboard
+// Power BI DAX Measures (stock_dax_measures.dax)
+// ============================================================================
+
+// 1. Latest Closing Price
+Latest Close Price = 
+VAR MaxDate = MAX('stock_market_data'[Date])
+RETURN
+CALCULATE(
+    AVERAGE('stock_market_data'[Close]),
+    'stock_market_data'[Date] = MaxDate
+)
+
+// 2. Latest Daily Return %
+Latest Daily Return % = 
+VAR MaxDate = MAX('stock_market_data'[Date])
+RETURN
+CALCULATE(
+    AVERAGE('stock_market_data'[Daily_Return]),
+    'stock_market_data'[Date] = MaxDate
+)
+
+// 3. Average Trading Volume
+Avg Volume = AVERAGE('stock_market_data'[Volume])
+
+// 4. Period High & Low
+52W High = MAX('stock_market_data'[High])
+52W Low = MIN('stock_market_data'[Low])
+
+// 5. AI Sentiment Indicator
+AI Sentiment Status = 
+SELECTEDVALUE('stock_ai_sentiment'[Sentiment_Label], "Neutral")
+
+// 6. AI Sentiment Numeric Score
+AI Sentiment Score = 
+SELECTEDVALUE('stock_ai_sentiment'[Sentiment_Score], 0.0)
+
+// 7. Dynamic AI Insight Text (For Card Visual)
+Executive AI Summary = 
+SELECTEDVALUE(
+    'stock_ai_sentiment'[AI_Summary],
+    "Select a single stock ticker to view AI-generated market insights."
+)
