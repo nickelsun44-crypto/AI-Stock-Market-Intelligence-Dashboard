@@ -1,0 +1,39 @@
+-- ============================================================================
+-- Project 1: AI-Powered Stock Market Intelligence Dashboard
+-- SQL Exploration Queries (stock_analytics_queries.sql)
+-- ============================================================================
+
+-- 1. Latest Closing Price, 20/50 SMA Trend Status, and AI Sentiment by Ticker
+SELECT 
+    m.Date,
+    m.Ticker,
+    ROUND(m.Close, 2) AS Latest_Close,
+    ROUND(m.Daily_Return, 2) AS Daily_Return_Pct,
+    ROUND(m.SMA_20, 2) AS SMA_20,
+    ROUND(m.SMA_50, 2) AS SMA_50,
+    CASE 
+        WHEN m.SMA_20 > m.SMA_50 THEN 'Golden Cross / Uptrend'
+        WHEN m.SMA_20 < m.SMA_50 THEN 'Death Cross / Pullback'
+        ELSE 'Neutral Trend'
+    END AS Technical_Signal,
+    s.Sentiment_Label,
+    s.Sentiment_Score,
+    s.AI_Summary
+FROM stock_market_data m
+LEFT JOIN stock_ai_sentiment s 
+    ON m.Ticker = s.Ticker
+WHERE m.Date = (SELECT MAX(Date) FROM stock_market_data)
+ORDER BY s.Sentiment_Score DESC;
+
+-- 2. 6-Month Period High, Low, Average Volume, and Cumulative Return by Ticker
+SELECT 
+    Ticker,
+    MIN(Date) AS Period_Start,
+    MAX(Date) AS Period_End,
+    ROUND(MIN(Low), 2) AS Period_Low,
+    ROUND(MAX(High), 2) AS Period_High,
+    ROUND(AVG(Volume), 0) AS Avg_Daily_Volume,
+    ROUND(AVG(Daily_Return), 3) AS Avg_Daily_Return_Pct
+FROM stock_market_data
+GROUP BY Ticker
+ORDER BY Avg_Daily_Return_Pct DESC;
